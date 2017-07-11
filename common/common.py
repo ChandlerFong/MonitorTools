@@ -38,6 +38,9 @@ class Resource():
         pids = commands.getoutput('ps aux|grep %s|grep -v grep|awk \'{print $2}\'' % proc_name).split('\n')
         if len(pids) > 0:
             return pids[0]
+        else:
+            return -1
+
 
     def get_cpu_user(self):
         cmd="cat /proc/" + str(self.pid)  +  "/stat |awk '{print $14+$16}'"
@@ -64,6 +67,8 @@ class Resource():
         return os.popen(cmd).read().strip("\n")
 
     def run(self):
+        if not os.path.isdir("/proc/" + str(self.pid)):
+            return
         self.resources_d={
             'process.cpu.user':[self.get_cpu_user,'COUNTER'],
             'process.cpu.sys':[self.get_cpu_sys,'COUNTER'],
