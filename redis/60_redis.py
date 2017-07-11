@@ -9,10 +9,12 @@ import re
 import sys
 import commands
 import urllib2, base64
+sys.path.append('../common')
+from common import Config
 
 class RedisStats:
     # 如果你是自己编译部署到redis，请将下面的值替换为你到redis-cli路径
-    _redis_cli = 'redis-cli'
+    _redis_cli = '/home/xpmotors/local/redis/bin/redis-cli'
     _stat_regex = re.compile(ur'(\w+):([0-9]+\.?[0-9]*)\r')
 
     def __init__(self,  port='6379', passwd=None, host='127.0.0.1'):
@@ -33,7 +35,7 @@ def main():
     step = 60
     # inst_list中保存了redis配置文件列表，程序将从这些配置中读取port和password，建议使用动态发现的方法获得，如：
     # inst_list = [ i for i in commands.getoutput("find  /etc/ -name 'redis*.conf'" ).split('\n') ]
-    insts_list = [ '/home/falcon/redis-3.2.9/redis.conf.6379' ]
+    insts_list = [ '/home/xpmotors/local/redis/redis.conf' ]
     p = []
     
     monit_keys = [
@@ -55,7 +57,8 @@ def main():
         port = commands.getoutput("sed -n 's/^port *\([0-9]\{4,5\}\)/\\1/p' %s" % inst)
         passwd = commands.getoutput("sed -n 's/^requirepass *\([^ ]*\)/\\1/p' %s" % inst)
         metric = "redis"
-        endpoint = hostname
+        config = Config()
+        endpoint = config.get_endpoint_name()
         tags = 'port=%s' % port
         #print port, passwd
         try:
@@ -87,7 +90,7 @@ def main():
             
             i = {
                 'Metric': '%s.%s' % (metric, key),
-                'Endpoint': "test",
+                'Endpoint': endpoint,
                 'Timestamp': timestamp,
                 'Step': step,
                 'Value': value,
@@ -116,7 +119,4 @@ def main():
     #else:
     #    print '{"err":1,"msg":"%s"}' % connection
 if __name__ == '__main__':
-    proc = commands.getoutput(' ps -ef|grep %s|grep -v grep|wc -l ' % os.path.basename(sys.argv[0]))
-    sys.stdout.flush()
-    if int(proc) < 5:
-        main()
+    main()
