@@ -9,7 +9,7 @@ import re
 import sys
 
 class Config:
-    def __init__(self,cfg_path="../cfg.json"):
+    def __init__(self,cfg_path="./cfg.json"):
         self.__cfg_path=cfg_path
     
     def get_endpoint_name(self):

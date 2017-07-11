@@ -9,7 +9,7 @@ import re
 import sys
 import commands
 import urllib2, base64
-sys.path.append('../common')
+sys.path.append('plugin/common/')
 from common import Config
 
 class RedisStats:

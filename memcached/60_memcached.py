@@ -8,7 +8,7 @@ import os
 import re
 import telnetlib
 import sys
-sys.path.append('../common')
+sys.path.append('plugin/common')
 from common import Config
 
 class MemcachedStats:
